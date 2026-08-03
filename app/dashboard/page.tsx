@@ -1,199 +1,282 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 export default function Dashboard() {
-  return (
-    <main className="min-h-screen bg-zinc-100 flex">
 
-      <aside className="w-64 bg-black text-white p-6">
+  const [clientes,setClientes] = useState(0);
+  const [pagos,setPagos] = useState(0);
+  const [entrenadores,setEntrenadores] = useState(0);
+  const [clases,setClases] = useState(0);
+  const [ingresos,setIngresos] = useState(0);
 
-        <h1 className="text-2xl font-bold mb-8">
-          FITNESS GYM 💪
-        </h1>
 
-        <nav className="space-y-4">
+  useEffect(()=>{
 
-          <a href="/dashboard" className="block hover:text-gray-300">
-            🏠 Inicio
-          </a>
+    const clientesData = JSON.parse(localStorage.getItem("clientes") || "[]");
+    const pagosData = JSON.parse(localStorage.getItem("pagos") || "[]");
+    const entrenadoresData = JSON.parse(localStorage.getItem("entrenadores") || "[]");
+    const clasesData = JSON.parse(localStorage.getItem("clases") || "[]");
 
-          <a href="/clientes" className="block hover:text-gray-300">
-            👥 Clientes
-          </a>
 
-          <a href="/pagos" className="block hover:text-gray-300">
-            💰 Pagos
-          </a>
+    setClientes(clientesData.length);
+    setPagos(pagosData.length);
+    setEntrenadores(entrenadoresData.length);
+    setClases(clasesData.length);
 
-          <a href="/entrenadores" className="block hover:text-gray-300">
-            🏋️ Entrenadores
-          </a>
 
-          <a href="/clases" className="block hover:text-gray-300">
-            📅 Clases
-          </a>
+    const total = pagosData.reduce(
+      (suma:any,pago:any)=> suma + Number(pago.monto || 0),
+      0
+    );
 
-        </nav>
+    setIngresos(total);
 
-      </aside>
 
+  },[]);
 
 
-      <section className="flex-1 p-8">
 
-        <h2 className="text-4xl font-bold mb-2">
-          Dashboard
-        </h2>
+return (
 
-        <p className="text-zinc-600 mb-8">
-          Bienvenido al panel de administración de tu gimnasio.
-        </p>
+<main className="min-h-screen bg-zinc-100 flex">
 
 
+<aside className="w-64 bg-black text-white p-6">
 
-        <div className="grid grid-cols-4 gap-6 mb-8">
 
+<h1 className="text-2xl font-bold mb-10">
+Simple Gym 💪
+</h1>
 
-          <div className="bg-white rounded-2xl shadow p-6">
-            <p className="text-zinc-500">
-              Clientes
-            </p>
 
-            <h3 className="text-4xl font-bold mt-2">
-              1
-            </h3>
+<nav className="space-y-5">
 
-            <p className="text-sm text-zinc-500">
-              Socios registrados
-            </p>
-          </div>
 
+<a href="/dashboard" className="block text-green-400 font-bold">
+🏠 Inicio
+</a>
 
 
-          <div className="bg-white rounded-2xl shadow p-6">
-            <p className="text-zinc-500">
-              Ingresos
-            </p>
+<a href="/clientes" className="block hover:text-green-400">
+👥 Clientes
+</a>
 
-            <h3 className="text-4xl font-bold mt-2">
-              $0
-            </h3>
 
-            <p className="text-sm text-zinc-500">
-              Este mes
-            </p>
-          </div>
+<a href="/pagos" className="block hover:text-green-400">
+💰 Pagos
+</a>
 
 
+<a href="/entrenadores" className="block hover:text-green-400">
+🏋️ Entrenadores
+</a>
 
-          <div className="bg-white rounded-2xl shadow p-6">
-            <p className="text-zinc-500">
-              Pagos pendientes
-            </p>
 
-            <h3 className="text-4xl font-bold mt-2">
-              0
-            </h3>
+<a href="/clases" className="block hover:text-green-400">
+📅 Clases
+</a>
 
-            <p className="text-sm text-zinc-500">
-              Socios con deuda
-            </p>
-          </div>
 
+</nav>
 
 
-          <div className="bg-white rounded-2xl shadow p-6">
-            <p className="text-zinc-500">
-              Clases hoy
-            </p>
+</aside>
 
-            <h3 className="text-4xl font-bold mt-2">
-              0
-            </h3>
 
-            <p className="text-sm text-zinc-500">
-              Programadas
-            </p>
-          </div>
 
 
-        </div>
 
+<section className="flex-1 p-10">
 
 
-        <div className="grid grid-cols-2 gap-6">
+<h1 className="text-4xl font-bold text-black mb-2">
+Dashboard
+</h1>
 
 
-          <a
-            href="/clientes"
-            className="bg-white rounded-2xl shadow p-8 hover:shadow-xl transition"
-          >
+<p className="text-zinc-600 mb-8">
+Bienvenido al panel de administración del gimnasio.
+</p>
 
-            <h3 className="text-2xl font-bold mb-2">
-              👥 Gestionar clientes
-            </h3>
 
-            <p className="text-zinc-600">
-              Agregá socios, editá información y controlá sus datos.
-            </p>
 
-          </a>
 
 
+<div className="grid grid-cols-4 gap-6 mb-8">
 
 
-          <a
-            href="/pagos"
-            className="bg-white rounded-2xl shadow p-8 hover:shadow-xl transition"
-          >
 
-            <h3 className="text-2xl font-bold mb-2">
-              💰 Control de pagos
-            </h3>
+<div className="bg-white rounded-2xl shadow border p-6">
 
-            <p className="text-zinc-600">
-              Revisá pagos realizados y pendientes.
-            </p>
+<p className="text-zinc-700 font-bold">
+👥 Socios
+</p>
 
-          </a>
+<h2 className="text-4xl font-bold text-black mt-3">
+{clientes}
+</h2>
 
+<p className="text-zinc-500">
+Registrados
+</p>
 
+</div>
 
-          <a
-            href="/entrenadores"
-            className="bg-white rounded-2xl shadow p-8 hover:shadow-xl transition"
-          >
 
-            <h3 className="text-2xl font-bold mb-2">
-              🏋️ Equipo
-            </h3>
 
-            <p className="text-zinc-600">
-              Administrá tus entrenadores.
-            </p>
 
-          </a>
 
+<div className="bg-white rounded-2xl shadow border p-6">
 
+<p className="text-zinc-700 font-bold">
+💰 Ingresos
+</p>
 
-          <a
-            href="/clases"
-            className="bg-white rounded-2xl shadow p-8 hover:shadow-xl transition"
-          >
+<h2 className="text-3xl font-bold text-black mt-3">
+${ingresos}
+</h2>
 
-            <h3 className="text-2xl font-bold mb-2">
-              📅 Clases
-            </h3>
+<p className="text-zinc-500">
+Este mes
+</p>
 
-            <p className="text-zinc-600">
-              Organizá horarios y actividades.
-            </p>
+</div>
 
-          </a>
 
 
-        </div>
 
 
-      </section>
+<div className="bg-white rounded-2xl shadow border p-6">
 
-    </main>
-  );
+<p className="text-zinc-700 font-bold">
+🏋️ Entrenadores
+</p>
+
+<h2 className="text-4xl font-bold text-black mt-3">
+{entrenadores}
+</h2>
+
+<p className="text-zinc-500">
+Equipo
+</p>
+
+</div>
+
+
+
+
+
+<div className="bg-white rounded-2xl shadow border p-6">
+
+<p className="text-zinc-700 font-bold">
+📅 Clases
+</p>
+
+<h2 className="text-4xl font-bold text-black mt-3">
+{clases}
+</h2>
+
+<p className="text-zinc-500">
+Programadas
+</p>
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div className="grid grid-cols-2 gap-6">
+
+
+
+<a
+href="/clientes"
+className="bg-white rounded-2xl shadow border p-6 hover:shadow-xl"
+>
+
+<h2 className="text-2xl font-bold text-black mb-2">
+👥 Clientes
+</h2>
+
+<p className="text-zinc-600">
+Administrá los socios del gimnasio.
+</p>
+
+</a>
+
+
+
+
+
+<a
+href="/pagos"
+className="bg-white rounded-2xl shadow border p-6 hover:shadow-xl"
+>
+
+<h2 className="text-2xl font-bold text-black mb-2">
+💰 Pagos
+</h2>
+
+<p className="text-zinc-600">
+Controlá cuotas e ingresos.
+</p>
+
+</a>
+
+
+
+
+
+<a
+href="/entrenadores"
+className="bg-white rounded-2xl shadow border p-6 hover:shadow-xl"
+>
+
+<h2 className="text-2xl font-bold text-black mb-2">
+🏋️ Entrenadores
+</h2>
+
+<p className="text-zinc-600">
+Gestioná tu equipo.
+</p>
+
+</a>
+
+
+
+
+
+<a
+href="/clases"
+className="bg-white rounded-2xl shadow border p-6 hover:shadow-xl"
+>
+
+<h2 className="text-2xl font-bold text-black mb-2">
+📅 Clases
+</h2>
+
+<p className="text-zinc-600">
+Organizá horarios.
+</p>
+
+</a>
+
+
+
+</div>
+
+
+
+</section>
+
+
+</main>
+
+);
+
 }

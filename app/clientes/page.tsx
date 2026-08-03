@@ -1,150 +1,90 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
 
 export default function Clientes() {
-
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [clientes, setClientes] = useState<any[]>([]);
 
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
   const [email, setEmail] = useState("");
 
-  const [clientes, setClientes] = useState<any[]>([]);
-  const [editando, setEditando] = useState<string | null>(null);
+  const [editando, setEditando] = useState<number | null>(null);
 
-
+  // Cargar clientes guardados
   useEffect(() => {
-    cargarClientes();
+    const guardados = localStorage.getItem("clientes");
+
+    if (guardados) {
+      setClientes(JSON.parse(guardados));
+    }
   }, []);
 
+  // Guardar clientes automáticamente
+  useEffect(() => {
+    localStorage.setItem("clientes", JSON.stringify(clientes));
+  }, [clientes]);
 
 
-  async function cargarClientes() {
-
-    const { data, error } = await supabase
-      .from("clientes")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-
-    if (error) {
-      console.log(error);
-      return;
-    }
-
-    setClientes(data || []);
-
-  }
-
-
-
-  async function guardarCliente() {
-
-
+  function guardarCliente() {
     if (!nombre) {
       alert("Ingresá un nombre");
       return;
     }
 
-
-    if(editando){
-
-      const {error} = await supabase
-        .from("clientes")
-        .update({
-          nombre,
-          telefono,
-          email
-        })
-        .eq("id", editando);
+    const cliente = {
+      nombre,
+      telefono,
+      email,
+    };
 
 
-      if(error){
-        console.log(error);
-        return;
-      }
+    if (editando !== null) {
+      const actualizados = clientes.map((c, index) =>
+        index === editando ? cliente : c
+      );
 
-
+      setClientes(actualizados);
       setEditando(null);
 
+    } else {
 
-    }else{
-
-
-      const { error } = await supabase
-        .from("clientes")
-        .insert([
-          {
-            nombre,
-            telefono,
-            email
-          }
-        ]);
-
-
-      if(error){
-        console.log(error);
-        return;
-      }
+      setClientes([
+        ...clientes,
+        cliente
+      ]);
 
     }
 
 
-
     limpiarFormulario();
-    cargarClientes();
-
   }
 
 
 
+  function editarCliente(index:number) {
 
-  function editarCliente(cliente:any){
+    const cliente = clientes[index];
 
     setNombre(cliente.nombre);
     setTelefono(cliente.telefono);
     setEmail(cliente.email);
 
-    setEditando(cliente.id);
-
-    setMostrarFormulario(true);
+    setEditando(index);
 
   }
 
 
 
+  function eliminarCliente(index:number) {
 
-  async function eliminarCliente(id:string){
+    if (!confirm("¿Eliminar este cliente?")) return;
 
+    const nuevos = clientes.filter((_, i)=> i !== index);
 
-    const confirmar = confirm(
-      "¿Seguro que querés eliminar este cliente?"
-    );
-
-
-    if(!confirmar) return;
-
-
-
-    const {error} = await supabase
-      .from("clientes")
-      .delete()
-      .eq("id", id);
-
-
-
-    if(error){
-      console.log(error);
-      return;
-    }
-
-
-    cargarClientes();
+    setClientes(nuevos);
 
   }
-
 
 
 
@@ -154,21 +94,14 @@ export default function Clientes() {
     setTelefono("");
     setEmail("");
 
-    setMostrarFormulario(false);
-
   }
 
 
 
-
-
   return (
-
     <main className="min-h-screen bg-zinc-100 flex">
 
-
       <aside className="w-64 bg-black text-white p-6">
-
 
         <h1 className="text-2xl font-bold mb-8">
           FITNESS GYM 💪
@@ -181,7 +114,7 @@ export default function Clientes() {
             🏠 Inicio
           </a>
 
-          <a href="/clientes" className="block">
+          <a href="/clientes" className="block font-bold text-green-400">
             👥 Clientes
           </a>
 
@@ -197,12 +130,9 @@ export default function Clientes() {
             📅 Clases
           </a>
 
-
         </nav>
 
-
       </aside>
-
 
 
 
@@ -214,32 +144,17 @@ export default function Clientes() {
         </h1>
 
 
-        <p className="text-zinc-700 mb-8">
+        <p className="text-zinc-600 mb-8">
           Administrá los socios del gimnasio.
         </p>
 
 
 
-        <button
-          onClick={()=>{
-            setMostrarFormulario(true)
-          }}
-          className="bg-black text-white px-6 py-3 rounded-xl mb-8"
-        >
-          + Agregar cliente
-        </button>
+        <div className="bg-white rounded-2xl shadow p-6 max-w-xl mb-8">
 
 
-
-
-
-        {mostrarFormulario && (
-
-        <div className="bg-white rounded-2xl shadow p-6 max-w-md mb-8">
-
-
-          <h2 className="text-xl font-bold text-black mb-4">
-            {editando ? "Editar cliente" : "Nuevo cliente"}
+          <h2 className="text-xl font-bold text-black mb-5">
+            {editando !== null ? "Editar socio" : "Nuevo socio"}
           </h2>
 
 
@@ -248,7 +163,7 @@ export default function Clientes() {
             placeholder="Nombre"
             value={nombre}
             onChange={(e)=>setNombre(e.target.value)}
-            className="w-full border text-black p-3 rounded-xl mb-3"
+            className="w-full border p-3 rounded-xl mb-3 text-black"
           />
 
 
@@ -256,7 +171,7 @@ export default function Clientes() {
             placeholder="Teléfono"
             value={telefono}
             onChange={(e)=>setTelefono(e.target.value)}
-            className="w-full border text-black p-3 rounded-xl mb-3"
+            className="w-full border p-3 rounded-xl mb-3 text-black"
           />
 
 
@@ -264,24 +179,20 @@ export default function Clientes() {
             placeholder="Email"
             value={email}
             onChange={(e)=>setEmail(e.target.value)}
-            className="w-full border text-black p-3 rounded-xl mb-4"
+            className="w-full border p-3 rounded-xl mb-5 text-black"
           />
 
 
 
           <button
             onClick={guardarCliente}
-            className="bg-green-600 text-white px-5 py-3 rounded-xl"
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl w-full"
           >
-            Guardar
+            Guardar cliente
           </button>
 
 
-
         </div>
-
-        )}
-
 
 
 
@@ -290,94 +201,82 @@ export default function Clientes() {
         <div className="bg-white rounded-2xl shadow p-6">
 
 
-          <h2 className="text-xl font-bold text-black mb-4">
-            Lista de clientes
+          <h2 className="text-xl font-bold text-black mb-6">
+            Lista de socios
           </h2>
 
 
 
+          {clientes.length === 0 ? (
 
-          {
-          clientes.length === 0 ? (
-
-            <p className="text-zinc-700">
+            <p className="text-zinc-600">
               No hay clientes registrados.
             </p>
 
-
           ) : (
 
-
-          clientes.map((cliente)=>(
-
-
-          <div
-            key={cliente.id}
-            className="border-b py-4 flex justify-between items-center"
-          >
+            <div className="space-y-4">
 
 
-            <div>
+              {clientes.map((cliente,index)=>(
 
-              <p className="font-bold text-black text-lg">
-                {cliente.nombre}
-              </p>
+                <div
+                  key={index}
+                  className="border rounded-xl p-5 flex justify-between items-center"
+                >
 
-              <p className="text-zinc-700">
-                📞 {cliente.telefono}
-              </p>
+                  <div className="text-black">
 
-              <p className="text-zinc-700">
-                📧 {cliente.email}
-              </p>
+                    <p className="font-bold text-lg">
+                      {cliente.nombre}
+                    </p>
+
+                    <p>📱 {cliente.telefono}</p>
+
+                    <p>📧 {cliente.email}</p>
+
+                  </div>
+
+
+                  <div className="space-x-2">
+
+
+                    <button
+                      onClick={()=>editarCliente(index)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-xl"
+                    >
+                      ✏️ Editar
+                    </button>
+
+
+                    <button
+                      onClick={()=>eliminarCliente(index)}
+                      className="bg-red-600 text-white px-4 py-2 rounded-xl"
+                    >
+                      🗑 Eliminar
+                    </button>
+
+
+                  </div>
+
+
+                </div>
+
+
+              ))}
+
 
             </div>
-
-
-
-            <div className="flex gap-2">
-
-
-              <button
-                onClick={()=>editarCliente(cliente)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-xl"
-              >
-                ✏️ Editar
-              </button>
-
-
-
-              <button
-                onClick={()=>eliminarCliente(cliente.id)}
-                className="bg-red-600 text-white px-4 py-2 rounded-xl"
-              >
-                🗑️ Eliminar
-              </button>
-
-
-
-            </div>
-
-
-          </div>
-
-
-          ))
-
 
           )}
 
 
-
         </div>
-
 
 
       </section>
 
 
     </main>
-
   );
-
 }

@@ -4,240 +4,282 @@ import { useEffect, useState } from "react";
 
 export default function Entrenadores() {
 
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [entrenadores, setEntrenadores] = useState<any[]>([]);
 
   const [nombre, setNombre] = useState("");
   const [especialidad, setEspecialidad] = useState("");
   const [telefono, setTelefono] = useState("");
 
-  const [entrenadores, setEntrenadores] = useState<any[]>([]);
 
 
-
-  // Cargar entrenadores guardados
   useEffect(() => {
 
-    const datos = localStorage.getItem("entrenadores");
+    const guardados = localStorage.getItem("entrenadores");
 
-    if (datos) {
-      setEntrenadores(JSON.parse(datos));
+    if(guardados){
+      setEntrenadores(JSON.parse(guardados));
     }
 
   }, []);
 
 
 
-
-  function guardarEntrenador() {
-
-    const nuevosEntrenadores = [
-      ...entrenadores,
-      {
-        nombre,
-        especialidad,
-        telefono
-      }
-    ];
-
-
-    setEntrenadores(nuevosEntrenadores);
-
+  useEffect(() => {
 
     localStorage.setItem(
       "entrenadores",
-      JSON.stringify(nuevosEntrenadores)
+      JSON.stringify(entrenadores)
     );
+
+  }, [entrenadores]);
+
+
+
+
+
+  function guardarEntrenador(){
+
+    if(!nombre){
+      alert("Ingresá un nombre");
+      return;
+    }
+
+
+    const nuevo = {
+      nombre,
+      especialidad,
+      telefono
+    };
+
+
+    setEntrenadores([
+      ...entrenadores,
+      nuevo
+    ]);
 
 
     setNombre("");
     setEspecialidad("");
     setTelefono("");
-    setMostrarFormulario(false);
 
   }
 
 
 
 
-  return (
-    <main className="min-h-screen bg-zinc-100 flex">
 
+  function eliminarEntrenador(index:number){
 
-      <aside className="w-64 bg-black text-white p-6">
+    const nuevos = entrenadores.filter(
+      (_,i)=>i !== index
+    );
 
+    setEntrenadores(nuevos);
 
-        <h1 className="text-2xl font-bold mb-8">
-          FITNESS GYM 💪
-        </h1>
+  }
 
 
 
-        <nav className="space-y-4">
 
-          <a href="/dashboard" className="block">
-            🏠 Inicio
-          </a>
 
-          <a href="/clientes" className="block">
-            👥 Clientes
-          </a>
+return (
 
-          <a href="/pagos" className="block">
-            💰 Pagos
-          </a>
+<main className="min-h-screen bg-zinc-100 flex">
 
-          <a href="/entrenadores" className="block">
-            🏋️ Entrenadores
-          </a>
 
-          <a href="/clases" className="block">
-            📅 Clases
-          </a>
+<aside className="w-64 bg-black text-white p-6">
 
-        </nav>
 
+<h1 className="text-2xl font-bold mb-8">
+FITNESS GYM 💪
+</h1>
 
-      </aside>
 
+<nav className="space-y-4">
 
 
+<a href="/dashboard" className="block">
+🏠 Inicio
+</a>
 
-      <section className="flex-1 p-8">
 
+<a href="/clientes" className="block">
+👥 Clientes
+</a>
 
-        <h1 className="text-4xl font-bold mb-2">
-          🏋️ Entrenadores
-        </h1>
 
+<a href="/pagos" className="block">
+💰 Pagos
+</a>
 
-        <p className="text-zinc-500 mb-8">
-          Administrá el equipo del gimnasio.
-        </p>
 
+<a href="/entrenadores" className="block font-bold text-green-400">
+🏋️ Entrenadores
+</a>
 
 
+<a href="/clases" className="block">
+📅 Clases
+</a>
 
-        <button
-          onClick={() => setMostrarFormulario(true)}
-          className="bg-black text-white px-6 py-3 rounded-xl mb-8"
-        >
-          + Agregar entrenador
-        </button>
 
+</nav>
 
 
+</aside>
 
-        {mostrarFormulario && (
 
-          <div className="bg-white rounded-2xl shadow p-6 max-w-md mb-8">
 
 
-            <h2 className="text-xl font-bold mb-4">
-              Nuevo entrenador
-            </h2>
 
+<section className="flex-1 p-8">
 
 
-            <input
-              placeholder="Nombre"
-              value={nombre}
-              onChange={(e)=>setNombre(e.target.value)}
-              className="w-full border p-3 rounded-xl mb-3"
-            />
+<h1 className="text-4xl font-bold text-black mb-2">
+🏋️ Entrenadores
+</h1>
 
 
+<p className="text-zinc-600 mb-8">
+Administrá el equipo del gimnasio.
+</p>
 
-            <input
-              placeholder="Especialidad"
-              value={especialidad}
-              onChange={(e)=>setEspecialidad(e.target.value)}
-              className="w-full border p-3 rounded-xl mb-3"
-            />
 
 
 
-            <input
-              placeholder="Teléfono"
-              value={telefono}
-              onChange={(e)=>setTelefono(e.target.value)}
-              className="w-full border p-3 rounded-xl mb-4"
-            />
 
+<div className="bg-white rounded-2xl shadow p-6 max-w-xl mb-8">
 
 
-            <button
-              onClick={guardarEntrenador}
-              className="bg-black text-white px-5 py-3 rounded-xl"
-            >
-              Guardar entrenador
-            </button>
+<h2 className="text-xl font-bold text-black mb-5">
+Nuevo entrenador
+</h2>
 
 
-          </div>
 
-        )}
+<input
+placeholder="Nombre"
+value={nombre}
+onChange={(e)=>setNombre(e.target.value)}
+className="w-full border p-3 rounded-xl mb-3 text-black"
+/>
 
 
 
+<input
+placeholder="Especialidad"
+value={especialidad}
+onChange={(e)=>setEspecialidad(e.target.value)}
+className="w-full border p-3 rounded-xl mb-3 text-black"
+/>
 
 
 
-        <div className="bg-white rounded-2xl shadow p-6">
+<input
+placeholder="Teléfono"
+value={telefono}
+onChange={(e)=>setTelefono(e.target.value)}
+className="w-full border p-3 rounded-xl mb-5 text-black"
+/>
 
 
-          <h2 className="text-xl font-bold mb-4">
-            Lista de entrenadores
-          </h2>
 
 
+<button
+onClick={guardarEntrenador}
+className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl w-full"
+>
+Guardar entrenador
+</button>
 
 
-          {entrenadores.length === 0 ? (
+</div>
 
-            <p className="text-zinc-500">
-              No hay entrenadores registrados.
-            </p>
 
 
-          ) : (
 
 
-            entrenadores.map((entrenador,index)=>(
 
-              <div
-                key={index}
-                className="border-b py-4"
-              >
+<div className="bg-white rounded-2xl shadow p-6">
 
-                <p className="font-bold">
-                  {entrenador.nombre}
-                </p>
 
+<h2 className="text-xl font-bold text-black mb-6">
+Lista de entrenadores
+</h2>
 
-                <p>
-                  🏋️ {entrenador.especialidad}
-                </p>
 
 
-                <p>
-                  📞 {entrenador.telefono}
-                </p>
 
+{entrenadores.length === 0 ? (
 
-              </div>
+<p className="text-zinc-600">
+No hay entrenadores registrados.
+</p>
 
-            ))
+) : (
 
-          )}
 
+<div className="space-y-4">
 
 
-        </div>
+{entrenadores.map((e,index)=>(
 
 
-      </section>
+<div
+key={index}
+className="border rounded-xl p-5 flex justify-between items-center"
+>
 
 
-    </main>
-  );
+<div className="text-black">
+
+
+<p className="font-bold text-lg">
+{e.nombre}
+</p>
+
+
+<p>🏋️ {e.especialidad}</p>
+
+
+<p>📱 {e.telefono}</p>
+
+
+</div>
+
+
+
+<button
+onClick={()=>eliminarEntrenador(index)}
+className="bg-red-600 text-white px-4 py-2 rounded-xl"
+>
+🗑 Eliminar
+</button>
+
+
+
+</div>
+
+
+))}
+
+
+</div>
+
+
+)}
+
+
+</div>
+
+
+
+</section>
+
+
+
+</main>
+
+);
+
 }

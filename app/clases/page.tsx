@@ -4,58 +4,100 @@ import { useEffect, useState } from "react";
 
 export default function Clases() {
 
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [clases, setClases] = useState<any[]>([]);
+  const [entrenadores, setEntrenadores] = useState<any[]>([]);
 
   const [nombre, setNombre] = useState("");
-  const [dia, setDia] = useState("");
   const [horario, setHorario] = useState("");
-  const [cupos, setCupos] = useState("");
+  const [entrenador, setEntrenador] = useState("");
 
-  const [clases, setClases] = useState<any[]>([]);
+  const [editando, setEditando] = useState<number | null>(null);
 
 
-
-  // Cargar clases guardadas
   useEffect(() => {
 
-    const datos = localStorage.getItem("clases");
+    const clasesGuardadas = localStorage.getItem("clases");
+    const entrenadoresGuardados = localStorage.getItem("entrenadores");
 
-    if (datos) {
-      setClases(JSON.parse(datos));
+
+    if(clasesGuardadas){
+      setClases(JSON.parse(clasesGuardadas));
     }
+
+
+    if(entrenadoresGuardados){
+      setEntrenadores(JSON.parse(entrenadoresGuardados));
+    }
+
 
   }, []);
 
 
 
-
-  function guardarClase() {
-
-    const nuevasClases = [
-      ...clases,
-      {
-        nombre,
-        dia,
-        horario,
-        cupos
-      }
-    ];
-
-
-    setClases(nuevasClases);
-
+  useEffect(() => {
 
     localStorage.setItem(
       "clases",
-      JSON.stringify(nuevasClases)
+      JSON.stringify(clases)
     );
 
+  }, [clases]);
 
-    setNombre("");
-    setDia("");
-    setHorario("");
-    setCupos("");
-    setMostrarFormulario(false);
+
+
+
+
+  function guardarClase(){
+
+    if(!nombre){
+      alert("Ingresá el nombre de la clase");
+      return;
+    }
+
+
+    const nuevaClase = {
+      nombre,
+      horario,
+      entrenador
+    };
+
+
+    if(editando !== null){
+
+      const actualizadas = clases.map((c,index)=>
+        index === editando ? nuevaClase : c
+      );
+
+      setClases(actualizadas);
+      setEditando(null);
+
+
+    } else {
+
+      setClases([
+        ...clases,
+        nuevaClase
+      ]);
+
+    }
+
+
+    limpiar();
+
+  }
+
+
+
+
+  function editarClase(index:number){
+
+    const clase = clases[index];
+
+    setNombre(clase.nombre);
+    setHorario(clase.horario);
+    setEntrenador(clase.entrenador);
+
+    setEditando(index);
 
   }
 
@@ -63,199 +105,252 @@ export default function Clases() {
 
 
 
-  return (
-    <main className="min-h-screen bg-zinc-100 flex">
+  function eliminarClase(index:number){
 
+    if(!confirm("¿Eliminar esta clase?")) return;
 
-      <aside className="w-64 bg-black text-white p-6">
 
+    setClases(
+      clases.filter((_,i)=>i !== index)
+    );
 
-        <h1 className="text-2xl font-bold mb-8">
-          FITNESS GYM 💪
-        </h1>
+  }
 
 
 
-        <nav className="space-y-4">
 
-          <a href="/dashboard" className="block">
-            🏠 Inicio
-          </a>
 
-          <a href="/clientes" className="block">
-            👥 Clientes
-          </a>
+  function limpiar(){
 
-          <a href="/pagos" className="block">
-            💰 Pagos
-          </a>
+    setNombre("");
+    setHorario("");
+    setEntrenador("");
 
-          <a href="/entrenadores" className="block">
-            🏋️ Entrenadores
-          </a>
+  }
 
-          <a href="/clases" className="block">
-            📅 Clases
-          </a>
 
-        </nav>
 
 
-      </aside>
 
+return (
 
+<main className="min-h-screen bg-zinc-100 flex">
 
 
-      <section className="flex-1 p-8">
+<aside className="w-64 bg-black text-white p-6">
 
 
-        <h1 className="text-4xl font-bold mb-2">
-          📅 Clases
-        </h1>
+<h1 className="text-2xl font-bold mb-8">
+FITNESS GYM 💪
+</h1>
 
 
-        <p className="text-zinc-500 mb-8">
-          Organizá horarios y actividades del gimnasio.
-        </p>
+<nav className="space-y-4">
 
+<a href="/dashboard" className="block">
+🏠 Inicio
+</a>
 
+<a href="/clientes" className="block">
+👥 Clientes
+</a>
 
+<a href="/pagos" className="block">
+💰 Pagos
+</a>
 
-        <button
-          onClick={() => setMostrarFormulario(true)}
-          className="bg-black text-white px-6 py-3 rounded-xl mb-8"
-        >
-          + Agregar clase
-        </button>
+<a href="/entrenadores" className="block">
+🏋️ Entrenadores
+</a>
 
+<a href="/clases" className="block font-bold text-green-400">
+📅 Clases
+</a>
 
+</nav>
 
 
-        {mostrarFormulario && (
+</aside>
 
-          <div className="bg-white rounded-2xl shadow p-6 max-w-md mb-8">
 
 
-            <h2 className="text-xl font-bold mb-4">
-              Nueva clase
-            </h2>
 
 
+<section className="flex-1 p-8">
 
-            <input
-              placeholder="Nombre de la clase"
-              value={nombre}
-              onChange={(e)=>setNombre(e.target.value)}
-              className="w-full border p-3 rounded-xl mb-3"
-            />
 
+<h1 className="text-4xl font-bold text-black mb-2">
+📅 Clases
+</h1>
 
 
-            <input
-              placeholder="Día"
-              value={dia}
-              onChange={(e)=>setDia(e.target.value)}
-              className="w-full border p-3 rounded-xl mb-3"
-            />
+<p className="text-zinc-600 mb-8">
+Administrá las clases del gimnasio.
+</p>
 
 
 
-            <input
-              placeholder="Horario"
-              value={horario}
-              onChange={(e)=>setHorario(e.target.value)}
-              className="w-full border p-3 rounded-xl mb-3"
-            />
 
 
+<div className="bg-white rounded-2xl shadow p-6 max-w-xl mb-8">
 
-            <input
-              placeholder="Cantidad de cupos"
-              value={cupos}
-              onChange={(e)=>setCupos(e.target.value)}
-              className="w-full border p-3 rounded-xl mb-4"
-            />
 
+<h2 className="text-xl font-bold text-black mb-5">
+{editando !== null ? "Editar clase" : "Nueva clase"}
+</h2>
 
 
-            <button
-              onClick={guardarClase}
-              className="bg-black text-white px-5 py-3 rounded-xl"
-            >
-              Guardar clase
-            </button>
 
 
-          </div>
 
-        )}
+<input
+placeholder="Nombre de clase"
+value={nombre}
+onChange={(e)=>setNombre(e.target.value)}
+className="w-full border p-3 rounded-xl mb-3 text-black"
+/>
 
 
 
 
 
+<input
+placeholder="Horario"
+value={horario}
+onChange={(e)=>setHorario(e.target.value)}
+className="w-full border p-3 rounded-xl mb-3 text-black"
+/>
 
-        <div className="bg-white rounded-2xl shadow p-6">
 
 
-          <h2 className="text-xl font-bold mb-4">
-            Lista de clases
-          </h2>
 
 
+<select
+value={entrenador}
+onChange={(e)=>setEntrenador(e.target.value)}
+className="w-full border p-3 rounded-xl mb-5 text-black"
+>
 
 
-          {clases.length === 0 ? (
+<option value="">
+Seleccionar entrenador
+</option>
 
-            <p className="text-zinc-500">
-              No hay clases registradas.
-            </p>
 
+{entrenadores.map((e,index)=>(
 
-          ) : (
+<option key={index}>
+{e.nombre}
+</option>
 
+))}
 
-            clases.map((clase,index)=>(
 
-              <div
-                key={index}
-                className="border-b py-4"
-              >
+</select>
 
-                <p className="font-bold">
-                  {clase.nombre}
-                </p>
 
 
-                <p>
-                  📅 {clase.dia}
-                </p>
 
 
-                <p>
-                  ⏰ {clase.horario}
-                </p>
+<button
+onClick={guardarClase}
+className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl w-full"
+>
 
+Guardar clase
 
-                <p>
-                  👥 {clase.cupos} cupos
-                </p>
+</button>
 
 
-              </div>
+</div>
 
-            ))
 
-          )}
 
 
 
-        </div>
 
 
-      </section>
+<div className="bg-white rounded-2xl shadow p-6">
 
 
-    </main>
-  );
+<h2 className="text-xl font-bold text-black mb-6">
+Lista de clases
+</h2>
+
+
+
+<div className="space-y-4">
+
+
+{clases.map((clase,index)=>(
+
+
+<div
+key={index}
+className="border rounded-xl p-5 flex justify-between items-center"
+>
+
+
+<div className="text-black">
+
+
+<p className="font-bold text-lg">
+{clase.nombre}
+</p>
+
+
+<p>🕒 {clase.horario}</p>
+
+
+<p>🏋️ {clase.entrenador}</p>
+
+
+</div>
+
+
+
+<div className="space-x-2">
+
+
+<button
+onClick={()=>editarClase(index)}
+className="bg-blue-600 text-white px-4 py-2 rounded-xl"
+>
+✏️ Editar
+</button>
+
+
+
+<button
+onClick={()=>eliminarClase(index)}
+className="bg-red-600 text-white px-4 py-2 rounded-xl"
+>
+🗑 Eliminar
+</button>
+
+
+</div>
+
+
+</div>
+
+
+))}
+
+
+</div>
+
+
+</div>
+
+
+
+</section>
+
+
+
+</main>
+
+);
+
 }
