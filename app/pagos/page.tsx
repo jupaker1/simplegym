@@ -1,67 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Pagos() {
 
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
-
+  const [pagos, setPagos] = useState<any[]>([]);
   const [cliente, setCliente] = useState("");
   const [monto, setMonto] = useState("");
 
-  const [pagos, setPagos] = useState<any[]>([]);
-
-
-
-  // Cargar pagos guardados
-  useEffect(() => {
-
-    const datos = localStorage.getItem("pagos");
-
-    if (datos) {
-      setPagos(JSON.parse(datos));
-    }
-
-  }, []);
-
-
-
-
   function guardarPago() {
 
-    const nuevosPagos = [
+    if (!cliente || !monto) return;
+
+    setPagos([
       ...pagos,
       {
         cliente,
-        monto,
-        estado: "Pagado"
+        monto
       }
-    ];
-
-
-    setPagos(nuevosPagos);
-
-
-    localStorage.setItem(
-      "pagos",
-      JSON.stringify(nuevosPagos)
-    );
-
+    ]);
 
     setCliente("");
     setMonto("");
-    setMostrarFormulario(false);
-
   }
 
 
-
-
   return (
+
     <main className="min-h-screen bg-zinc-100 flex">
 
-
-      {/* MENÚ */}
 
       <aside className="w-64 bg-black text-white p-6">
 
@@ -98,129 +65,94 @@ export default function Pagos() {
 
 
 
-
-      {/* CONTENIDO */}
-
       <section className="flex-1 p-8">
 
 
-        <h1 className="text-4xl font-bold mb-2">
+        <h1 className="text-4xl font-bold mb-2 text-black">
           💰 Pagos
         </h1>
 
 
-        <p className="text-zinc-500 mb-8">
-          Controlá las cuotas de tus clientes.
+        <p className="text-zinc-600 mb-8">
+          Administrá los pagos de los socios.
         </p>
 
 
 
-
-        <button
-          onClick={() => setMostrarFormulario(true)}
-          className="bg-black text-white px-6 py-3 rounded-xl mb-8"
-        >
-          + Registrar pago
-        </button>
+        <div className="bg-white rounded-2xl shadow p-6 max-w-md mb-8">
 
 
+          <h2 className="text-xl font-bold mb-4 text-black">
+            Nuevo pago
+          </h2>
 
 
-        {mostrarFormulario && (
-
-          <div className="bg-white rounded-2xl shadow p-6 max-w-md mb-8">
-
-
-            <h2 className="text-xl font-bold mb-4">
-              Nuevo pago
-            </h2>
+          <input
+            placeholder="Cliente"
+            value={cliente}
+            onChange={(e)=>setCliente(e.target.value)}
+            className="w-full border p-3 rounded-xl mb-3 text-black"
+          />
 
 
-
-            <input
-              placeholder="Nombre del cliente"
-              value={cliente}
-              onChange={(e)=>setCliente(e.target.value)}
-              className="w-full border p-3 rounded-xl mb-3"
-            />
-
+          <input
+            placeholder="Monto"
+            value={monto}
+            onChange={(e)=>setMonto(e.target.value)}
+            className="w-full border p-3 rounded-xl mb-4 text-black"
+          />
 
 
-            <input
-              placeholder="Monto"
-              value={monto}
-              onChange={(e)=>setMonto(e.target.value)}
-              className="w-full border p-3 rounded-xl mb-4"
-            />
+          <button
+            onClick={guardarPago}
+            className="bg-black text-white px-5 py-3 rounded-xl"
+          >
+            Guardar pago
+          </button>
 
 
-
-            <button
-              onClick={guardarPago}
-              className="bg-black text-white px-5 py-3 rounded-xl"
-            >
-              Guardar pago
-            </button>
-
-
-          </div>
-
-        )}
-
-
-
+        </div>
 
 
 
         <div className="bg-white rounded-2xl shadow p-6">
 
 
-          <h2 className="text-xl font-bold mb-4">
-            Historial de pagos
+          <h2 className="text-xl font-bold mb-4 text-black">
+            Lista de pagos
           </h2>
 
 
+          {
+            pagos.length === 0 ? (
 
+              <p className="text-zinc-600">
+                No hay pagos registrados.
+              </p>
 
-          {pagos.length === 0 ? (
+            ) : (
 
-            <p className="text-zinc-500">
-              No hay pagos registrados.
-            </p>
+              pagos.map((pago,index)=>(
 
+                <div
+                  key={index}
+                  className="border-b py-4 text-black"
+                >
 
-          ) : (
+                  <p className="font-bold">
+                    {pago.cliente}
+                  </p>
 
+                  <p>
+                    💵 ${pago.monto}
+                  </p>
 
-            pagos.map((pago,index)=>(
+                </div>
 
-              <div
-                key={index}
-                className="border-b py-4"
-              >
+              ))
 
-                <p className="font-bold">
-                  {pago.cliente}
-                </p>
-
-
-                <p>
-                  💰 ${pago.monto}
-                </p>
-
-
-                <p>
-                  🟢 {pago.estado}
-                </p>
-
-
-              </div>
-
-
-            ))
-
-          )}
-
+            )
+          }
 
 
         </div>
@@ -230,5 +162,6 @@ export default function Pagos() {
 
 
     </main>
+
   );
 }
