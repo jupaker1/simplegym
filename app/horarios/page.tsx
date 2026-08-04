@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 
 export default function Horarios(){
 
-const [entrenadores,setEntrenadores]=useState<any[]>([]);
-const [horarios,setHorarios]=useState<any[]>([]);
-const [dia,setDia]=useState("Lunes");
-const [hora,setHora]=useState("08:00");
-const [entrenador,setEntrenador]=useState("");
-const [editando,setEditando]=useState<number|null>(null);
+const [entrenadores,setEntrenadores] = useState<any[]>([]);
+const [horarios,setHorarios] = useState<any[]>([]);
+
+const [dia,setDia] = useState("Lunes");
+const [hora,setHora] = useState("08:00");
+const [entrenador,setEntrenador] = useState("");
+
+const [editando,setEditando] = useState<number | null>(null);
 
 
 useEffect(()=>{
@@ -48,18 +50,19 @@ return;
 }
 
 
-const nuevo={
+const nuevo = {
 dia,
 hora,
 entrenador
 };
 
 
-if(editando!==null){
+
+if(editando !== null){
 
 setHorarios(
 horarios.map((h,index)=>
-index===editando ? nuevo : h
+index === editando ? nuevo : h
 )
 );
 
@@ -68,10 +71,12 @@ setEditando(null);
 
 }else{
 
+
 setHorarios([
 ...horarios,
 nuevo
 ]);
+
 
 }
 
@@ -84,7 +89,7 @@ setEntrenador("");
 
 function editarHorario(index:number){
 
-const h=horarios[index];
+const h = horarios[index];
 
 setDia(h.dia);
 setHora(h.hora);
@@ -108,6 +113,28 @@ horarios.filter((_,i)=>i!==index)
 
 
 
+const dias=[
+"Lunes",
+"Martes",
+"Miércoles",
+"Jueves",
+"Viernes",
+"Sábado"
+];
+
+
+const horas=[];
+
+for(let i=8;i<=22;i++){
+
+horas.push(
+`${i}:00`
+);
+
+}
+
+
+
 return (
 
 <main className="min-h-screen bg-zinc-100 flex">
@@ -116,12 +143,12 @@ return (
 <aside className="w-64 bg-black text-white p-6">
 
 
-<h1 className="text-2xl font-bold mb-8">
+<h1 className="text-2xl font-bold mb-10">
 FITNESS GYM 💪
 </h1>
 
 
-<nav className="space-y-4">
+<nav className="space-y-5">
 
 
 <a href="/dashboard" className="block">
@@ -149,12 +176,13 @@ FITNESS GYM 💪
 </a>
 
 
-<a href="/horarios" className="block font-bold text-green-400">
+<a href="/horarios" className="block text-green-400 font-bold">
 🗓️ Horarios
 </a>
 
 
 </nav>
+
 
 </aside>
 
@@ -169,12 +197,17 @@ FITNESS GYM 💪
 
 
 <p className="text-zinc-600 mb-8">
-Organizá los horarios del equipo.
+Organizá los horarios de entrenamiento.
 </p>
 
 
 
 <div className="bg-white rounded-2xl shadow p-6 max-w-xl mb-8">
+
+
+<h2 className="text-xl font-bold text-black mb-5">
+Asignar horario
+</h2>
 
 
 
@@ -184,12 +217,13 @@ onChange={(e)=>setDia(e.target.value)}
 className="w-full border p-3 rounded-xl mb-3 text-black"
 >
 
-<option>Lunes</option>
-<option>Martes</option>
-<option>Miércoles</option>
-<option>Jueves</option>
-<option>Viernes</option>
-<option>Sábado</option>
+{
+dias.map((d,index)=>(
+<option key={index}>
+{d}
+</option>
+))
+}
 
 </select>
 
@@ -202,17 +236,18 @@ onChange={(e)=>setHora(e.target.value)}
 className="w-full border p-3 rounded-xl mb-3 text-black"
 >
 
+
 {
-Array.from({length:15},(_,i)=>8+i).map(h=>(
-
-<option key={h}>
-{h}:00
+horas.map((h,index)=>(
+<option key={index}>
+{h}
 </option>
-
 ))
 }
 
+
 </select>
+
 
 
 
@@ -244,19 +279,23 @@ entrenadores.map((e,index)=>(
 
 
 
-
 <button
 onClick={guardarHorario}
 className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl w-full"
 >
 
-{editando!==null ? "Guardar cambios" : "Asignar horario"}
+{
+editando !== null
+?
+"Guardar cambios"
+:
+"Asignar horario"
+}
 
 </button>
 
 
 </div>
-
 
 
 
@@ -271,20 +310,20 @@ Horarios asignados
 
 
 {
-horarios.length===0 ? (
+horarios.length===0 ?
 
 <p className="text-zinc-600">
-Todavía no hay horarios cargados.
+No hay horarios asignados.
 </p>
 
-) : (
-
+:
 
 <div className="space-y-4">
 
 
 {
 horarios.map((h,index)=>(
+
 
 <div
 key={index}
@@ -294,13 +333,16 @@ className="border rounded-xl p-5 flex justify-between items-center"
 
 <div className="text-black">
 
+
 <p className="font-bold text-lg">
 {h.dia} - {h.hora}
 </p>
 
+
 <p>
 🏋️ {h.entrenador}
 </p>
+
 
 </div>
 
@@ -331,15 +373,12 @@ className="bg-red-600 text-white px-4 py-2 rounded-xl"
 
 </div>
 
-))
 
+))
 }
 
 
 </div>
-
-
-)
 
 }
 
