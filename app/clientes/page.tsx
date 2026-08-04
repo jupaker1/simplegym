@@ -3,280 +3,309 @@
 import { useEffect, useState } from "react";
 
 export default function Clientes() {
-  const [clientes, setClientes] = useState<any[]>([]);
 
-  const [nombre, setNombre] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [email, setEmail] = useState("");
+const [clientes, setClientes] = useState<any[]>([]);
+const [nombre, setNombre] = useState("");
+const [telefono, setTelefono] = useState("");
+const [email, setEmail] = useState("");
+const [editando, setEditando] = useState<number | null>(null);
 
-  const [editando, setEditando] = useState<number | null>(null);
 
-  // Cargar clientes guardados
-  useEffect(() => {
-    const guardados = localStorage.getItem("clientes");
+useEffect(()=>{
 
-    if (guardados) {
-      setClientes(JSON.parse(guardados));
-    }
-  }, []);
+const guardados = localStorage.getItem("clientes");
 
-  // Guardar clientes automáticamente
-  useEffect(() => {
-    localStorage.setItem("clientes", JSON.stringify(clientes));
-  }, [clientes]);
+if(guardados){
+setClientes(JSON.parse(guardados));
+}
 
+},[]);
 
-  function guardarCliente() {
-    if (!nombre) {
-      alert("Ingresá un nombre");
-      return;
-    }
 
-    const cliente = {
-      nombre,
-      telefono,
-      email,
-    };
+useEffect(()=>{
 
+localStorage.setItem(
+"clientes",
+JSON.stringify(clientes)
+);
 
-    if (editando !== null) {
-      const actualizados = clientes.map((c, index) =>
-        index === editando ? cliente : c
-      );
+},[clientes]);
 
-      setClientes(actualizados);
-      setEditando(null);
 
-    } else {
 
-      setClientes([
-        ...clientes,
-        cliente
-      ]);
+function guardarCliente(){
 
-    }
+if(!nombre){
+alert("Ingresá un nombre");
+return;
+}
 
 
-    limpiarFormulario();
-  }
+const cliente={
+nombre,
+telefono,
+email
+};
 
 
+if(editando!==null){
 
-  function editarCliente(index:number) {
+setClientes(
+clientes.map((c,index)=>
+index===editando ? cliente : c
+)
+);
 
-    const cliente = clientes[index];
+setEditando(null);
 
-    setNombre(cliente.nombre);
-    setTelefono(cliente.telefono);
-    setEmail(cliente.email);
+}else{
 
-    setEditando(index);
+setClientes([
+...clientes,
+cliente
+]);
 
-  }
+}
 
 
+limpiarFormulario();
 
-  function eliminarCliente(index:number) {
+}
 
-    if (!confirm("¿Eliminar este cliente?")) return;
 
-    const nuevos = clientes.filter((_, i)=> i !== index);
 
-    setClientes(nuevos);
+function editarCliente(index:number){
 
-  }
+const cliente=clientes[index];
 
+setNombre(cliente.nombre);
+setTelefono(cliente.telefono);
+setEmail(cliente.email);
 
+setEditando(index);
 
-  function limpiarFormulario(){
+}
 
-    setNombre("");
-    setTelefono("");
-    setEmail("");
 
-  }
 
+function eliminarCliente(index:number){
 
+if(!confirm("¿Eliminar este cliente?")) return;
 
-  return (
-    <main className="min-h-screen bg-zinc-100 flex">
+setClientes(
+clientes.filter((_,i)=>i!==index)
+);
 
-      <aside className="w-64 bg-black text-white p-6">
+}
 
-        <h1 className="text-2xl font-bold mb-8">
-          FITNESS GYM 💪
-        </h1>
 
 
-        <nav className="space-y-4">
+function limpiarFormulario(){
 
-          <a href="/dashboard" className="block">
-            🏠 Inicio
-          </a>
+setNombre("");
+setTelefono("");
+setEmail("");
 
-          <a href="/clientes" className="block font-bold text-green-400">
-            👥 Clientes
-          </a>
+}
 
-          <a href="/pagos" className="block">
-            💰 Pagos
-          </a>
 
-          <a href="/entrenadores" className="block">
-            🏋️ Entrenadores
-          </a>
 
-          <a href="/clases" className="block">
-            📅 Clases
-          </a>
+return (
 
-        </nav>
+<main className="min-h-screen bg-zinc-100 flex">
 
-      </aside>
 
+<aside className="w-64 bg-black text-white p-6">
 
 
-      <section className="flex-1 p-8">
+<h1 className="text-2xl font-bold mb-8">
+FITNESS GYM 💪
+</h1>
 
 
-        <h1 className="text-4xl font-bold text-black mb-2">
-          👥 Clientes
-        </h1>
+<nav className="space-y-4">
 
 
-        <p className="text-zinc-600 mb-8">
-          Administrá los socios del gimnasio.
-        </p>
+<a href="/dashboard" className="block">
+🏠 Inicio
+</a>
 
 
+<a href="/clientes" className="block font-bold text-green-400">
+👥 Clientes
+</a>
 
-        <div className="bg-white rounded-2xl shadow p-6 max-w-xl mb-8">
 
+<a href="/pagos" className="block">
+💰 Pagos
+</a>
 
-          <h2 className="text-xl font-bold text-black mb-5">
-            {editando !== null ? "Editar socio" : "Nuevo socio"}
-          </h2>
 
+<a href="/entrenadores" className="block">
+🏋️ Entrenadores
+</a>
 
 
-          <input
-            placeholder="Nombre"
-            value={nombre}
-            onChange={(e)=>setNombre(e.target.value)}
-            className="w-full border p-3 rounded-xl mb-3 text-black"
-          />
+<a href="/clases" className="block">
+📅 Clases
+</a>
 
 
-          <input
-            placeholder="Teléfono"
-            value={telefono}
-            onChange={(e)=>setTelefono(e.target.value)}
-            className="w-full border p-3 rounded-xl mb-3 text-black"
-          />
+<a href="/horarios" className="block">
+🗓️ Horarios
+</a>
 
 
-          <input
-            placeholder="Email"
-            value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-            className="w-full border p-3 rounded-xl mb-5 text-black"
-          />
+</nav>
 
 
+</aside>
 
-          <button
-            onClick={guardarCliente}
-            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl w-full"
-          >
-            Guardar cliente
-          </button>
 
 
-        </div>
+<section className="flex-1 p-8">
 
 
+<h1 className="text-4xl font-bold text-black mb-2">
+👥 Clientes
+</h1>
 
 
+<p className="text-zinc-600 mb-8">
+Administrá los socios del gimnasio.
+</p>
 
-        <div className="bg-white rounded-2xl shadow p-6">
 
 
-          <h2 className="text-xl font-bold text-black mb-6">
-            Lista de socios
-          </h2>
+<div className="bg-white rounded-2xl shadow p-6 max-w-xl mb-8">
 
 
+<h2 className="text-xl font-bold text-black mb-5">
+{editando!==null ? "Editar socio" : "Nuevo socio"}
+</h2>
 
-          {clientes.length === 0 ? (
 
-            <p className="text-zinc-600">
-              No hay clientes registrados.
-            </p>
+<input
+placeholder="Nombre"
+value={nombre}
+onChange={(e)=>setNombre(e.target.value)}
+className="w-full border p-3 rounded-xl mb-3 text-black"
+/>
 
-          ) : (
 
-            <div className="space-y-4">
+<input
+placeholder="Teléfono"
+value={telefono}
+onChange={(e)=>setTelefono(e.target.value)}
+className="w-full border p-3 rounded-xl mb-3 text-black"
+/>
 
 
-              {clientes.map((cliente,index)=>(
+<input
+placeholder="Email"
+value={email}
+onChange={(e)=>setEmail(e.target.value)}
+className="w-full border p-3 rounded-xl mb-5 text-black"
+/>
 
-                <div
-                  key={index}
-                  className="border rounded-xl p-5 flex justify-between items-center"
-                >
 
-                  <div className="text-black">
+<button
+onClick={guardarCliente}
+className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl w-full"
+>
+Guardar cliente
+</button>
 
-                    <p className="font-bold text-lg">
-                      {cliente.nombre}
-                    </p>
 
-                    <p>📱 {cliente.telefono}</p>
+</div>
 
-                    <p>📧 {cliente.email}</p>
 
-                  </div>
 
+<div className="bg-white rounded-2xl shadow p-6">
 
-                  <div className="space-x-2">
 
+<h2 className="text-xl font-bold text-black mb-6">
+Lista de socios
+</h2>
 
-                    <button
-                      onClick={()=>editarCliente(index)}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-xl"
-                    >
-                      ✏️ Editar
-                    </button>
 
 
-                    <button
-                      onClick={()=>eliminarCliente(index)}
-                      className="bg-red-600 text-white px-4 py-2 rounded-xl"
-                    >
-                      🗑 Eliminar
-                    </button>
+{clientes.length===0 ? (
 
+<p className="text-zinc-600">
+No hay clientes registrados.
+</p>
 
-                  </div>
+):(
 
 
-                </div>
+<div className="space-y-4">
 
 
-              ))}
+{clientes.map((cliente,index)=>(
 
 
-            </div>
+<div
+key={index}
+className="border rounded-xl p-5 flex justify-between items-center"
+>
 
-          )}
 
+<div className="text-black">
 
-        </div>
+<p className="font-bold text-lg">
+{cliente.nombre}
+</p>
 
+<p>📱 {cliente.telefono}</p>
 
-      </section>
+<p>📧 {cliente.email}</p>
 
+</div>
 
-    </main>
-  );
+
+
+<div className="space-x-2">
+
+
+<button
+onClick={()=>editarCliente(index)}
+className="bg-blue-600 text-white px-4 py-2 rounded-xl"
+>
+✏️ Editar
+</button>
+
+
+<button
+onClick={()=>eliminarCliente(index)}
+className="bg-red-600 text-white px-4 py-2 rounded-xl"
+>
+🗑 Eliminar
+</button>
+
+
+</div>
+
+
+</div>
+
+
+))}
+
+
+</div>
+
+)}
+
+
+</div>
+
+
+</section>
+
+
+</main>
+
+);
+
 }

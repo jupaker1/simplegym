@@ -2,83 +2,72 @@
 
 import { useEffect, useState } from "react";
 
-export default function Entrenadores() {
+export default function Entrenadores(){
 
-  const [entrenadores, setEntrenadores] = useState<any[]>([]);
-
-  const [nombre, setNombre] = useState("");
-  const [especialidad, setEspecialidad] = useState("");
-  const [telefono, setTelefono] = useState("");
-
+const [entrenadores,setEntrenadores]=useState<any[]>([]);
+const [nombre,setNombre]=useState("");
+const [especialidad,setEspecialidad]=useState("");
+const [telefono,setTelefono]=useState("");
 
 
-  useEffect(() => {
+useEffect(()=>{
 
-    const guardados = localStorage.getItem("entrenadores");
+const guardados=localStorage.getItem("entrenadores");
 
-    if(guardados){
-      setEntrenadores(JSON.parse(guardados));
-    }
+if(guardados){
+setEntrenadores(JSON.parse(guardados));
+}
 
-  }, []);
+},[]);
 
 
+useEffect(()=>{
 
-  useEffect(() => {
+localStorage.setItem(
+"entrenadores",
+JSON.stringify(entrenadores)
+);
 
-    localStorage.setItem(
-      "entrenadores",
-      JSON.stringify(entrenadores)
-    );
-
-  }, [entrenadores]);
+},[entrenadores]);
 
 
 
+function guardarEntrenador(){
+
+if(!nombre){
+alert("Ingresá un nombre");
+return;
+}
 
 
-  function guardarEntrenador(){
-
-    if(!nombre){
-      alert("Ingresá un nombre");
-      return;
-    }
-
-
-    const nuevo = {
-      nombre,
-      especialidad,
-      telefono
-    };
+const nuevo={
+nombre,
+especialidad,
+telefono
+};
 
 
-    setEntrenadores([
-      ...entrenadores,
-      nuevo
-    ]);
+setEntrenadores([
+...entrenadores,
+nuevo
+]);
 
 
-    setNombre("");
-    setEspecialidad("");
-    setTelefono("");
+setNombre("");
+setEspecialidad("");
+setTelefono("");
 
-  }
-
+}
 
 
 
+function eliminarEntrenador(index:number){
 
-  function eliminarEntrenador(index:number){
+setEntrenadores(
+entrenadores.filter((_,i)=>i!==index)
+);
 
-    const nuevos = entrenadores.filter(
-      (_,i)=>i !== index
-    );
-
-    setEntrenadores(nuevos);
-
-  }
-
-
+}
 
 
 
@@ -113,7 +102,7 @@ FITNESS GYM 💪
 </a>
 
 
-<a href="/entrenadores" className="block font-bold text-green-400">
+<a href="/entrenadores" className="block text-green-400 font-bold">
 🏋️ Entrenadores
 </a>
 
@@ -123,12 +112,15 @@ FITNESS GYM 💪
 </a>
 
 
+<a href="/horarios" className="block">
+🗓️ Horarios
+</a>
+
+
 </nav>
 
 
 </aside>
-
-
 
 
 
@@ -141,20 +133,12 @@ FITNESS GYM 💪
 
 
 <p className="text-zinc-600 mb-8">
-Administrá el equipo del gimnasio.
+Gestioná tu equipo.
 </p>
 
 
 
-
-
-<div className="bg-white rounded-2xl shadow p-6 max-w-xl mb-8">
-
-
-<h2 className="text-xl font-bold text-black mb-5">
-Nuevo entrenador
-</h2>
-
+<div className="bg-white rounded-2xl shadow p-6 max-w-xl">
 
 
 <input
@@ -165,7 +149,6 @@ className="w-full border p-3 rounded-xl mb-3 text-black"
 />
 
 
-
 <input
 placeholder="Especialidad"
 value={especialidad}
@@ -174,14 +157,12 @@ className="w-full border p-3 rounded-xl mb-3 text-black"
 />
 
 
-
 <input
 placeholder="Teléfono"
 value={telefono}
 onChange={(e)=>setTelefono(e.target.value)}
 className="w-full border p-3 rounded-xl mb-5 text-black"
 />
-
 
 
 
@@ -198,25 +179,22 @@ Guardar entrenador
 
 
 
+<div className="mt-8 bg-white rounded-2xl shadow p-6">
 
 
-<div className="bg-white rounded-2xl shadow p-6">
-
-
-<h2 className="text-xl font-bold text-black mb-6">
-Lista de entrenadores
+<h2 className="text-xl font-bold text-black mb-5">
+Equipo
 </h2>
 
 
 
-
-{entrenadores.length === 0 ? (
+{entrenadores.length===0 ? (
 
 <p className="text-zinc-600">
 No hay entrenadores registrados.
 </p>
 
-) : (
+):(
 
 
 <div className="space-y-4">
@@ -233,17 +211,17 @@ className="border rounded-xl p-5 flex justify-between items-center"
 
 <div className="text-black">
 
-
 <p className="font-bold text-lg">
 {e.nombre}
 </p>
 
+<p>
+🏋️ {e.especialidad}
+</p>
 
-<p>🏋️ {e.especialidad}</p>
-
-
-<p>📱 {e.telefono}</p>
-
+<p>
+📱 {e.telefono}
+</p>
 
 </div>
 
@@ -273,9 +251,7 @@ className="bg-red-600 text-white px-4 py-2 rounded-xl"
 </div>
 
 
-
 </section>
-
 
 
 </main>

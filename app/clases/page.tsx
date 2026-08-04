@@ -4,131 +4,114 @@ import { useEffect, useState } from "react";
 
 export default function Clases() {
 
-  const [clases, setClases] = useState<any[]>([]);
-  const [entrenadores, setEntrenadores] = useState<any[]>([]);
-
-  const [nombre, setNombre] = useState("");
-  const [horario, setHorario] = useState("");
-  const [entrenador, setEntrenador] = useState("");
-
-  const [editando, setEditando] = useState<number | null>(null);
+const [clases, setClases] = useState<any[]>([]);
+const [entrenadores, setEntrenadores] = useState<any[]>([]);
+const [nombre, setNombre] = useState("");
+const [horario, setHorario] = useState("");
+const [entrenador, setEntrenador] = useState("");
+const [editando, setEditando] = useState<number | null>(null);
 
 
-  useEffect(() => {
+useEffect(()=>{
 
-    const clasesGuardadas = localStorage.getItem("clases");
-    const entrenadoresGuardados = localStorage.getItem("entrenadores");
+const clasesGuardadas = localStorage.getItem("clases");
+const entrenadoresGuardados = localStorage.getItem("entrenadores");
 
+if(clasesGuardadas){
+setClases(JSON.parse(clasesGuardadas));
+}
 
-    if(clasesGuardadas){
-      setClases(JSON.parse(clasesGuardadas));
-    }
+if(entrenadoresGuardados){
+setEntrenadores(JSON.parse(entrenadoresGuardados));
+}
 
-
-    if(entrenadoresGuardados){
-      setEntrenadores(JSON.parse(entrenadoresGuardados));
-    }
-
-
-  }, []);
+},[]);
 
 
+useEffect(()=>{
 
-  useEffect(() => {
+localStorage.setItem(
+"clases",
+JSON.stringify(clases)
+);
 
-    localStorage.setItem(
-      "clases",
-      JSON.stringify(clases)
-    );
-
-  }, [clases]);
+},[clases]);
 
 
 
+function guardarClase(){
+
+if(!nombre){
+alert("Ingresá el nombre de la clase");
+return;
+}
 
 
-  function guardarClase(){
-
-    if(!nombre){
-      alert("Ingresá el nombre de la clase");
-      return;
-    }
-
-
-    const nuevaClase = {
-      nombre,
-      horario,
-      entrenador
-    };
+const nuevaClase={
+nombre,
+horario,
+entrenador
+};
 
 
-    if(editando !== null){
+if(editando!==null){
 
-      const actualizadas = clases.map((c,index)=>
-        index === editando ? nuevaClase : c
-      );
+setClases(
+clases.map((c,index)=>
+index===editando ? nuevaClase : c
+)
+);
 
-      setClases(actualizadas);
-      setEditando(null);
+setEditando(null);
 
+}else{
 
-    } else {
+setClases([
+...clases,
+nuevaClase
+]);
 
-      setClases([
-        ...clases,
-        nuevaClase
-      ]);
+}
 
-    }
+limpiar();
 
-
-    limpiar();
-
-  }
+}
 
 
 
+function editarClase(index:number){
 
-  function editarClase(index:number){
+const clase=clases[index];
 
-    const clase = clases[index];
+setNombre(clase.nombre);
+setHorario(clase.horario);
+setEntrenador(clase.entrenador);
 
-    setNombre(clase.nombre);
-    setHorario(clase.horario);
-    setEntrenador(clase.entrenador);
+setEditando(index);
 
-    setEditando(index);
-
-  }
-
+}
 
 
 
+function eliminarClase(index:number){
 
-  function eliminarClase(index:number){
+if(!confirm("¿Eliminar esta clase?")) return;
 
-    if(!confirm("¿Eliminar esta clase?")) return;
+setClases(
+clases.filter((_,i)=>i!==index)
+);
 
-
-    setClases(
-      clases.filter((_,i)=>i !== index)
-    );
-
-  }
+}
 
 
 
+function limpiar(){
 
+setNombre("");
+setHorario("");
+setEntrenador("");
 
-  function limpiar(){
-
-    setNombre("");
-    setHorario("");
-    setEntrenador("");
-
-  }
-
-
+}
 
 
 
@@ -140,67 +123,60 @@ return (
 <aside className="w-64 bg-black text-white p-6">
 
 
-<h1 className="text-2xl font-bold mb-8">
-FITNESS GYM 💪
+<h1 className="text-2xl font-bold mb-10">
+Gimnasio sencillo 💪
 </h1>
 
 
-<nav className="space-y-4">
+<nav className="space-y-5">
 
-<a href="/dashboard" className="block">
+
+<a href="/dashboard" className="block hover:text-green-400">
 🏠 Inicio
 </a>
 
-<a href="/clientes" className="block">
+
+<a href="/clientes" className="block hover:text-green-400">
 👥 Clientes
 </a>
 
-<a href="/pagos" className="block">
+
+<a href="/pagos" className="block hover:text-green-400">
 💰 Pagos
 </a>
 
-<a href="/entrenadores" className="block">
+
+<a href="/entrenadores" className="block hover:text-green-400">
 🏋️ Entrenadores
 </a>
 
-<a href="/clases" className="block font-bold text-green-400">
+
+<a href="/clases" className="block text-green-400 font-bold">
 📅 Clases
 </a>
 
-</nav>
 
+<a href="/horarios" className="block hover:text-green-400">
+🗓️ Horarios
+</a>
+
+
+</nav>
 
 </aside>
 
 
 
+<section className="flex-1 p-10">
 
 
-<section className="flex-1 p-8">
-
-
-<h1 className="text-4xl font-bold text-black mb-2">
+<h1 className="text-4xl font-bold mb-8 text-black">
 📅 Clases
 </h1>
 
 
-<p className="text-zinc-600 mb-8">
-Administrá las clases del gimnasio.
-</p>
 
-
-
-
-
-<div className="bg-white rounded-2xl shadow p-6 max-w-xl mb-8">
-
-
-<h2 className="text-xl font-bold text-black mb-5">
-{editando !== null ? "Editar clase" : "Nueva clase"}
-</h2>
-
-
-
+<div className="bg-white rounded-2xl shadow border p-6 max-w-xl">
 
 
 <input
@@ -209,8 +185,6 @@ value={nombre}
 onChange={(e)=>setNombre(e.target.value)}
 className="w-full border p-3 rounded-xl mb-3 text-black"
 />
-
-
 
 
 
@@ -223,14 +197,11 @@ className="w-full border p-3 rounded-xl mb-3 text-black"
 
 
 
-
-
 <select
 value={entrenador}
 onChange={(e)=>setEntrenador(e.target.value)}
 className="w-full border p-3 rounded-xl mb-5 text-black"
 >
-
 
 <option value="">
 Seleccionar entrenador
@@ -239,7 +210,7 @@ Seleccionar entrenador
 
 {entrenadores.map((e,index)=>(
 
-<option key={index}>
+<option key={index} value={e.nombre}>
 {e.nombre}
 </option>
 
@@ -250,14 +221,12 @@ Seleccionar entrenador
 
 
 
-
-
 <button
 onClick={guardarClase}
 className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl w-full"
 >
 
-Guardar clase
+{editando!==null ? "Guardar cambios" : "Guardar clase"}
 
 </button>
 
@@ -266,50 +235,34 @@ Guardar clase
 
 
 
-
-
-
-
-<div className="bg-white rounded-2xl shadow p-6">
-
-
-<h2 className="text-xl font-bold text-black mb-6">
-Lista de clases
-</h2>
-
-
-
-<div className="space-y-4">
+<div className="mt-8 space-y-4">
 
 
 {clases.map((clase,index)=>(
 
-
 <div
 key={index}
-className="border rounded-xl p-5 flex justify-between items-center"
+className="bg-white rounded-2xl shadow border p-5"
 >
 
 
-<div className="text-black">
-
-
-<p className="font-bold text-lg">
+<h2 className="text-2xl font-bold text-black">
 {clase.nombre}
+</h2>
+
+
+<p className="text-zinc-600">
+🕒 {clase.horario}
 </p>
 
 
-<p>🕒 {clase.horario}</p>
-
-
-<p>🏋️ {clase.entrenador}</p>
-
-
-</div>
+<p className="text-zinc-600">
+🏋️ {clase.entrenador}
+</p>
 
 
 
-<div className="space-x-2">
+<div className="flex gap-3 mt-4">
 
 
 <button
@@ -320,12 +273,11 @@ className="bg-blue-600 text-white px-4 py-2 rounded-xl"
 </button>
 
 
-
 <button
 onClick={()=>eliminarClase(index)}
 className="bg-red-600 text-white px-4 py-2 rounded-xl"
 >
-🗑 Eliminar
+🗑️ Eliminar
 </button>
 
 
@@ -334,19 +286,13 @@ className="bg-red-600 text-white px-4 py-2 rounded-xl"
 
 </div>
 
-
 ))}
 
 
 </div>
 
 
-</div>
-
-
-
 </section>
-
 
 
 </main>
